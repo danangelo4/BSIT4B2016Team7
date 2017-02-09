@@ -18,6 +18,11 @@ pageHeader('Dashboard','dashboard','')
 		<section class="wrapper">
 			<div class="row">
 					<div class="col-sm-12">
+						<div class="form-group">
+							<input class="form-control input-lg" type="search" placeholder="Search keywords here">
+						</div>
+					</div>
+					<div class="col-sm-12">
 						<h1 style="color:#191919;">Asked Questions</h1>
 			
 								<div class="whitetable">
