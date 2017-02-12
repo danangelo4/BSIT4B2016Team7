@@ -2,5 +2,5 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "filipatrol";
+$db = "inquiry";
 ?>

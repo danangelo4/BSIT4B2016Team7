@@ -268,9 +268,13 @@ input.search-form:hover {
 .navbar {
   border-radius: 0;
   margin-bottom: 0;
-  background: #151515;
+  background: #fff;
   padding: 15px 0;
-  padding-bottom: 0;
+  padding-bottom: 70px;
+  color: #fff;
+  background: none repeat scroll 0 0 #fff;
+  border-bottom: 5px solid #C52D2F;
+  height: 84px;
 }
 
  .navbar-nav{
@@ -294,10 +298,6 @@ input.search-form:hover {
 .navbar-inverse .navbar-nav > li > a:hover{
 	background-color: #c52d2f;
   color: #fff;
-}
-
-.navbar-inverse {
-  border: none;
 }
 
 .navbar-inverse .navbar-brand {
@@ -2509,7 +2509,6 @@ shortcodes page css
   padding-bottom: 30px;
   color: #fff;
   background: none repeat scroll 0 0 #151515;
-  border-top: 5px solid #C52D2F;
   height: 84px;
   margin-top: 110px;
 }

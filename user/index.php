@@ -3,6 +3,9 @@ session_start();
 	
 if( isset($_GET['action']) && strlen($_GET['action'])>0 ) {
 	switch($_GET['action']){
+	case 'ask':
+		askquestion();
+		break;
 	default:
 		home();
 	}
@@ -13,9 +16,8 @@ if( isset($_GET['action']) && strlen($_GET['action'])>0 ) {
 
 function home(){ 
 	include "model/model.php";
-	$Concerns = view_recent_concerns();
-	$Alerts = view_recent_alerts();
 	include "views/dashboard.php";
 }
+
 
 ?>

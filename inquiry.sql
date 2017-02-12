@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2017 at 12:27 PM
+-- Generation Time: Feb 12, 2017 at 06:53 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -53,16 +53,48 @@ CREATE TABLE IF NOT EXISTS `answers` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `departments`
+-- Table structure for table `branch`
 --
 
-CREATE TABLE IF NOT EXISTS `departments` (
+CREATE TABLE IF NOT EXISTS `branch` (
   `id` int(11) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `description` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `branch`
+--
+
+INSERT INTO `branch` (`id`, `name`, `description`) VALUES
+(00000000001, 'TUP Manila', 'Ermita, Manila'),
+(00000000002, 'TUP Cavite', 'Dasmarinas, Cavite'),
+(00000000003, 'TUP Visayas', 'Talisay City, Visayas');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `departments`
+--
+
+CREATE TABLE IF NOT EXISTS `departments` (
+  `id` int(11) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `branch_id` int(11) unsigned zerofill NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `branch_id` (`branch_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `departments`
+--
+
+INSERT INTO `departments` (`id`, `branch_id`, `name`, `description`) VALUES
+(00000000001, 00000000001, 'Registrar', '');
 
 -- --------------------------------------------------------
 
@@ -102,6 +134,12 @@ CREATE TABLE IF NOT EXISTS `questions` (
 --
 ALTER TABLE `admin`
   ADD CONSTRAINT `department_id` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`);
+
+--
+-- Constraints for table `departments`
+--
+ALTER TABLE `departments`
+  ADD CONSTRAINT `branch_id_fk` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`id`);
 
 --
 -- Constraints for table `questions`
