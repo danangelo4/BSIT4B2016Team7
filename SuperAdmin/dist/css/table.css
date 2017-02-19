@@ -1,0 +1,9 @@
+
+.clicked{ 
+	background-color:#3c8dbc; 
+	color: #fff;
+	}
+	
+.clickable{
+	cursor: pointer;
+}

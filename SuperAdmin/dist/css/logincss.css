@@ -1,0 +1,33 @@
+body { background: url('img/.jpg'); 
+background-color:#fff;
+background-repeat: no-repeat;
+background-size: cover;
+background-position: top center;
+background-attachment: fixed;}
+
+
+[class*="span"].centred {
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+}
+
+.white {
+        color: #fff;
+    }
+	
+a:hover.white{
+        color:#fff;
+        text-decoration: none;
+    }
+	
+a:visited.white{
+        color:#fff;
+        text-decoration: none;
+    }
+	
+a:active.white{
+        color:#fff;
+        text-decoration: none;
+    }
+	
