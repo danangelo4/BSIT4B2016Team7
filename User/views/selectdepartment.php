@@ -16,13 +16,13 @@ $sql = "SELECT * FROM departments where branch_id='$branch_id'";
 //display 
 $result = mysqli_query($conn,$sql);
 
-$Branch = array();
+$Dept = array();
 	if( $myrow=mysqli_fetch_array($result) ){
 		do{
 			$info= array();			
 			$info['id'] = $myrow['id'];
 			$info['name'] = $myrow['name'];
-			$Branch[] = $info;
+			$Dept[] = $info;
 		}while($myrow=mysqli_fetch_array($result));
 	}
 ?>
@@ -30,10 +30,10 @@ $Branch = array();
 echo'
 	<option selected="selected" value="" disabled>--TUP Department--</option>
 ';
-if( isset($Branch) && count($Branch)>0 ){
-	foreach($Branch as $Branch){
+if( isset($Dept) && count($Dept)>0 ){
+	foreach($Dept as $Dept){
 		echo '
-				<option value="'.$Branch['name'].'">'.$Branch['name'].'</option>
+				<option value="'.$Dept['id'].'">'.$Dept['name'].'</option>
 			';
 	}
 }else{

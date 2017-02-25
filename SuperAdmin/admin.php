@@ -28,7 +28,7 @@ if( isset($_GET['action']) && strlen($_GET['action'])>0 ) {
 		users_();
 		break;
 	case 'branch':
-		agencies_();
+		branch_();
 		break;
 	case 'department':
 		dept_();
@@ -75,14 +75,23 @@ if( isset($_GET['action']) && strlen($_GET['action'])>0 ) {
 	case 'edit_super_admin':
 		editsuperadmin_();
 		break;
-	case 'edit_agency':
-		editagency_();
+	case 'edit_branch':
+		editbranch_();
+		break;
+	case 'edit_department':
+		editdepartment_();
 		break;
 	case 'delete_admin':
 		deleteadmin_();
 		break;
-	case 'delete_agency':
-		deleteagency_();
+	case 'delete_superadmin':
+		deletesuperadmin_();
+		break;
+	case 'delete_branch':
+		deletebranch_();
+		break;
+	case 'delete_department':
+		deletedepartment_();
 		break;
 	case 'delete_alert':
 		deletealert_();
@@ -132,7 +141,6 @@ function profile_(){
 function logout_(){
 	include "model/model.php";
 	logout_log();
-	active_admin_logout();
 	session_start();
 	session_destroy();
 	header("Location: admin.php");
@@ -156,50 +164,51 @@ function users_(){
 	include "users.php";
 }
 
-function agencies_(){
+function branch_(){
 	include "model/model.php";
-	$Agencies = agency_details();
+	$Agencies = branch_details();
 	include "branch.php";
 }
 
 function dept_(){
 	include "model/model.php";
 	$Depts = dept_details();
+	$Branch = select_branch();
 	include "department.php";
 }
 
 function addbranch_(){
 	if( $_SERVER['REQUEST_METHOD']=='POST' ){
-				$agency_name = $_POST['agency_name'];
-				$agency_desc = $_POST['agency_desc'];
+				$branch_name = $_POST['branch_name'];
+				$branch_desc = $_POST['branch_desc'];
 		ob_start();
 		include "model/model.php";
-		$Agencyadd = add_agency($agency_name,$agency_desc);
+		add_branch($branch_name,$branch_desc);
 		ob_end_clean();
-		$Agencies = agency_details();
-		include "government_agencies.php";
+		$Agencies = branch_details();
+		include "branch.php";
 	}else{
-		
 		include "model/model.php";
-		$Agencies = agency_details();
 		include "addbranch.php";
 	}
 }
 
 function adddept_(){
 	if( $_SERVER['REQUEST_METHOD']=='POST' ){
-				$agency_name = $_POST['agency_name'];
-				$agency_desc = $_POST['agency_desc'];
+				$branch_id = $_POST['branch'];
+				$department_name = $_POST['dept_name'];
+				$department_desc = $_POST['dept_desc'];
 		ob_start();
 		include "model/model.php";
-		$Agencyadd = add_agency($agency_name,$agency_desc);
+		add_department($branch_id,$department_name,$department_desc);
 		ob_end_clean();
-		$Agencies = agency_details();
-		include "government_agencies.php";
+		$Depts = dept_details();
+		$Branch = branch_details();
+		include "department.php";
 	}else{
-		
 		include "model/model.php";
-		$Agencies = agency_details();
+		$Depts = dept_details();
+		$Branch = branch_details();
 		include "adddepartment.php";
 	}
 }
@@ -210,11 +219,11 @@ function addadmin_(){
 				$password = $_POST['password'];
 				$first_name = $_POST['first_name'];
 				$last_name = $_POST['last_name'];
-				$email = $_POST['email'];
-				$govt_agency = $_POST['govt_agency'];
+				$branch = $_POST['branch'];
+				$department = $_POST['department'];
 		ob_start();
 		include "model/model.php";
-		$Admin = add_admin($username,$password,$first_name,$last_name,$email,$govt_agency);
+		$Admin = add_operator($username,$password,$first_name,$last_name,$branch,$department);
 		ob_end_clean();
 		$Admins = admin_details();
 		$Branch = select_branch();
@@ -254,7 +263,7 @@ function addsuperadmin_(){
 
 function concerns_(){
 	include "model/model.php";
-	$Concerns = concern_details();
+	$Concerns = inquiry_details();
 	$Agency = select_branch();
 	include "inquiries.php";
 }
@@ -284,11 +293,11 @@ function viewconcern_(){
 							echo 'File uploaded';
 							ob_start();
 							include "model/model.php";
-							$ConcernResponse = add_concern_response($response_msg,$image,$concern_msg);
+							$ConcernResponse = add_inquiry_response($response_msg,$image,$concern_msg);
 							make_status_replied();
 							response_log();
 							ob_end_clean();
-							$Concerns = concern_details();
+							$Concerns = inquiry_details();
 							include "concerns.php";
 						}
 				}else
@@ -297,19 +306,19 @@ function viewconcern_(){
 					ob_start();
 					include "model/model.php";
 					$image="";
-					$ConcernResponse = add_concern_response($response_msg,$image,$concern_msg);
+					$ConcernResponse = add_inquiry_response($response_msg,$image,$concern_msg);
 					make_status_replied();
 					response_log();
 					ob_end_clean();
-					$Concerns = concern_details();
+					$Concerns = inquiry_details();
 					include "concerns.php";
 				}
 				
 		
 	}else{
 	include "model/model.php";
-	$ViewConcern = get_concern_details();
-	$ViewConcernResponse = get_concern_response();
+	$ViewConcern = get_inquiry_details();
+	$ViewConcernResponse = get_inquiry_response();
 	include "view_concern.php";
 	}
 }
@@ -401,11 +410,11 @@ function editadmin_(){
 				$username = $_POST['username'];
 				$first_name = $_POST['first_name'];
 				$last_name = $_POST['last_name'];
-				$email = $_POST['email'];
-				$govt_agency = $_POST['govt_agency'];
+				$branch_id = $_POST['branch_id'];
+				$department_id = $_POST['department_id'];
 		ob_start();
 		include "model/model.php";
-		$EditAdmin = edit_admin($username,$password,$first_name,$last_name,$email,$govt_agency);
+		$EditAdmin = edit_admin($username,$password,$first_name,$last_name,$branch_id,$department_id);
 		edit_admin_log();
 		ob_end_clean();
 		$Admins = admin_details();
@@ -439,21 +448,38 @@ function editsuperadmin_(){
 	}
 }
 
-function editagency_(){
+function editbranch_(){
 	if( $_SERVER['REQUEST_METHOD']=='POST' ){
-				$agency_name = $_POST['agency_name'];
-				$agency_desc = $_POST['agency_desc'];
+				$branch_name = $_POST['branch_name'];
+				$branch_desc = $_POST['branch_desc'];
 		ob_start();
 		include "model/model.php";
-		$EditAgency = edit_agency($agency_name,$agency_desc);
-		edit_admin_log();
+		edit_branch($branch_name,$branch_desc);
 		ob_end_clean();
-		$Agencies = agency_details();
-		include "government_agencies.php";
+		$Agencies = branch_details();
+		include "branch.php";
 	}else{
 	include "model/model.php";
-	$ViewAgency = get_agency_details();
-	include "edit_agency.php";
+	$ViewAgency = get_branch_details();
+	include "edit_branch.php";
+	}
+}
+
+function editdepartment_(){
+	if( $_SERVER['REQUEST_METHOD']=='POST' ){
+				$department_name = $_POST['department_name'];
+				$department_desc = $_POST['department_desc'];
+		ob_start();
+		include "model/model.php";
+		edit_department($department_name,$department_desc);
+		ob_end_clean();
+		$Depts = dept_details();
+		$Branch = select_branch();
+		include "department.php";
+	}else{
+	include "model/model.php";
+	$ViewDept = get_department_details();
+	include "edit_department.php";
 	}
 }
 
@@ -499,13 +525,32 @@ function deleteadmin_(){
 	include "admins.php";
 }
 
-function deleteagency_(){
+function deletesuperadmin_(){
 	ob_start();
 	include "model/model.php";
-	delete_agency();
+	delete_superadmin_();
 	ob_clean();
-	$Agencies = agency_details();
-	include "government_agencies.php";
+	$SuperAdmins = super_admin_details();
+	include "super_admins.php";
+}
+
+function deletebranch_(){
+	ob_start();
+	include "model/model.php";
+	delete_branch();
+	ob_clean();
+	$Agencies = branch_details();
+	include "branch.php";
+}
+
+function deletedepartment_(){
+	ob_start();
+	include "model/model.php";
+	delete_department();
+	ob_clean();
+	$Depts = dept_details();
+	$Branch = select_branch();
+	include "department.php";
 }
 
 

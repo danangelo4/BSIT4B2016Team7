@@ -51,9 +51,9 @@ pageHeader('Operators','operators','');
 									<thead>
 										<tr>
 											<th class="text-center" width="30%">USERNAME</th>
+											<th class="text-center" width="30%">FULL NAME</th>
 											<th class="text-center" width="20%">BRANCH</th>
 											<th class="text-center" width="20%">DEPARTMENT</th>
-											<th class="text-center" width="30%">FULL NAME</th>
 										</tr>
 									</thead>
 									
@@ -64,9 +64,9 @@ pageHeader('Operators','operators','');
 											echo '
 												<tr class="text-center clickable" id="'.$Admins['id'].'">
 													<td><small>'.$Admins['username'].'</small></td>
-													<td><small>'.$Admins['department_name'].'</small></td>
-													<td><small>'.$Admins['department_name'].'</small></td>
 													<td><small>'.$Admins['first_name'].' '.$Admins['last_name'].'</small></td>
+													<td><small>'.$Admins['branch'].'</small></td>
+													<td><small>'.$Admins['department'].'</small></td>
 													
 												</tr>
 												';
@@ -74,7 +74,10 @@ pageHeader('Operators','operators','');
 									}else{
 										echo '
 												<tr class="text-center">
-													<td colspan="5">No records found</td>
+													<td>N/A</td>
+													<td>N/A</td>
+													<td>N/A</td>
+													<td>N/A</td>
 													
 												</tr>
 												';

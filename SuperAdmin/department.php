@@ -29,13 +29,35 @@ pageHeader('Department','department','');
     <section class="content">
       <!-- Small boxes (Stat box) -->
 		<div class="row">
+			
+			<div class="col-sm-4">
+				<select class="form-control" id="branch" name="branch">
+				<option selected="selected" value="" disabled>--Select a Branch--</option>
+					<?php
+						if( isset($Branch) && count($Branch)>0 ){
+							foreach($Branch as $Branch){
+								echo '
+										<option value="'.$Branch['id'].'">'.$Branch['name'].'</option>
+									';
+							}
+						}else{
+							echo '
+										<option>NO RECORDS FOUND</option>
+									';
+						}
+					?>
+				 </select>
+			</div>
+			<div class="col-sm-8">
+				<span class="btn-group pull-right"> 
+				<a class="btn btn-success btn-md pull-left" href="admin.php?action=add_dept">Add</a>
+				<button class="btn btn-primary btn-md btnEdit" role="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;Edit</button>
+				<button class="btn btn-danger btn-md btnDelete" role="button"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
+				</span>
+			</div>
+			
+			
 			<div class="col-sm-12">
-					<a class="btn btn-success btn-md pull-left" href="admin.php?action=add_dept">Add Department</a>
-					<span class="btn-group pull-right"> 
-    				<button class="btn btn-primary btn-md btnEdit" role="button"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;Edit</button>
-    				<button class="btn btn-danger btn-md btnDelete" role="button"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete</button>
-					</span>
-					<br />
 					<br />
 					<section class="panel">
 				
@@ -43,7 +65,7 @@ pageHeader('Department','department','');
 					<div id="page-content-wrapper">
 						<div class="panel-body">
 							<div class="table-responsive">
-								<table id="agencies" class="table table-bordered">
+								<table class="table table-bordered" id="departmenttbl">
 								
 									<thead>
 										<tr>
@@ -52,26 +74,12 @@ pageHeader('Department','department','');
 										</tr>
 									</thead>
 									
-									<tbody>
-									<?php
-									if( isset($Depts) && count($Depts)>0 ){
-										foreach($Depts as $Depts){
-											echo '
-												<tr class="text-center clickable" id="'.$Depts['id'].'">
-													<td><small>'.$Depts['name'].'</small></td>
-													<td><small>'.$Depts['description'].'</small></td>
-												</tr>
-												';
-										}
-									}else{
-										echo '
-												<tr class="text-center">
-													<td colspan="5">No records found</td>
-													
-												</tr>
-												';
-									}
-									?>
+									<tbody id="depts_table">
+										<tr class="text-center">
+											<td>-------SELECT A BRANCH FIRST--------</td>
+											<td>-------SELECT A BRANCH FIRST--------</td>
+											
+										</tr>
 									</tbody>
 								</table>
 							</div>
@@ -106,6 +114,23 @@ pageFooter();
 <script type="text/javascript">
 var ID="";
 $(document).ready(function(){
+	
+	$("#branch").change(function()
+	 {
+		branch= document.getElementById("branch").value;
+			$.ajax
+			({
+				type: "POST",
+				url: "get_department_to_table.php",
+				data: {branch},
+				cache: false,
+				success: function(r)
+				{
+				  $("#depts_table").html(r);
+				} 
+			});
+		
+	});
 
     $(document).on('click', '.clickable', function(){
             $('.clickable').removeClass('clicked');
@@ -116,7 +141,7 @@ $(document).ready(function(){
 	
 	$(".btnEdit").click(function(){
        if(ID!=""){
-    		window.location = 'admin.php?action=edit_agency&id=' + ID;
+    		window.location = 'admin.php?action=edit_department&id=' + ID;
 
         }else{
 			$('.modal').modal('show');
@@ -129,12 +154,12 @@ $(document).ready(function(){
 	$(".btnDelete").click(function(){
        if(ID!=""){
 		   
-		    if(!confirm('Are you sure you want to delete this agency?')){
+		    if(!confirm('Are you sure you want to delete this department?')){
             e.preventDefault();
             return false;
 			}else{
-    		window.location = 'admin.php?action=delete_agency&id=' + ID;
-			alert("Agency has been deleted");
+    		window.location = 'admin.php?action=delete_department&id=' + ID;
+			alert("Department has been deleted successfully");
 			}
 
         }else{
@@ -146,7 +171,7 @@ $(document).ready(function(){
 	
 });
  $(function () {
-    $('#agencies').DataTable({
+    $('#departmenttbl').DataTable({
       "paging": true,
       "lengthChange": false,
       "searching": true,

@@ -8,8 +8,8 @@ if( mysqli_connect_errno($conn) ){
 }else{
 }
 //prepare
-$agency_name=$_POST['agency_name'];
-$sql = "SELECT agency_name FROM govt_agency WHERE agency_name = '$agency_name'";
+$dept_name=$_POST['dept_name'];
+$sql = "SELECT name FROM departments WHERE name = '$dept_name'";
 
 //display 
 $result = mysqli_query($conn,$sql);

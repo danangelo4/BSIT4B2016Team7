@@ -72,7 +72,9 @@ pageHeader('Admins','admins','');
 									}else{
 										echo '
 												<tr class="text-center">
-													<td colspan="5">No records found</td>
+													<td>N/A</td>
+													<td>N/A</td>
+													<td>N/A</td>
 													
 												</tr>
 												';
@@ -135,12 +137,12 @@ $(document).ready(function(){
 	$(".btnDelete").click(function(){
        if(ID!=""){
 		   
-		    if(!confirm('Are you sure to delete?')){
+		    if(!confirm('Are you sure to delete this Super Admin?')){
             e.preventDefault();
             return false;
 			}else{
-    		window.location = 'admin.php?action=delete_admin&id=' + ID;
-			alert("Admin has been removed successfully");
+    		window.location = 'admin.php?action=delete_superadmin&id=' + ID;
+			alert("Super Admin has been removed successfully");
 			}
 
         }else{

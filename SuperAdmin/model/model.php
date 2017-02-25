@@ -60,28 +60,6 @@ $result = mysqli_query($conn,$sql);
 
 }
 
-function active_admin(){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$username=$_SESSION['sa_username'];
-$time = time();
-$sql = "REPLACE INTO active_admin (username, time_visited) VALUES ('$username','$time')";
-
-//display
-$result = mysqli_query($conn,$sql);
-
-}
-
-
 
 function logout_log(){
 
@@ -101,70 +79,6 @@ $sql = "INSERT INTO logs(username,action,datetime) VALUES('$username','$action',
 
 //display
 $result = mysqli_query($conn,$sql);
-
-}
-
-
-
-function active_admin_logout(){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$username=$_SESSION['sa_username'];
-$sql = "DELETE FROM active_admin WHERE username='$username'";
-
-//display
-$result = mysqli_query($conn,$sql);
-
-}
-
-
-
-
-function view_unattended(){
-	
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-$sql = "SELECT t1.*
-FROM messages t1
-WHERE t1.message_id = (SELECT t2.message_id
-                 FROM messages t2, chat_rooms t3
-                 WHERE (t2.chat_room_id,t3.chat_room_id) = (t1.chat_room_id,t1.chat_room_id)
-                 AND t3.status = 'unattended'
-                 ORDER BY t2.message_id DESC
-                 LIMIT 1
-                 )";
-
-//display 
-$result = mysqli_query($conn,$sql);
-
-$ChatUnattended = array();
-	if( $myrow=mysqli_fetch_array($result) ){
-		do{
-			$info= array();
-			$info['chat_room_id'] = $myrow['chat_room_id'];
-			$info['message_id'] = $myrow['message_id'];
-			$info['message'] = $myrow['message'];
-			$info['created_at'] = $myrow['created_at'];
-			$ChatUnattended[] = $info;
-		}while($myrow=mysqli_fetch_array($result));
-	}
-	return $ChatUnattended;
 
 }
 
@@ -227,6 +141,7 @@ $Logs = array();
 			$info['username'] = $myrow['username'];
 			$info['action'] = $myrow['action'];
 			$info['object_id'] = $myrow['object_id'];
+			$info['datetime'] = $myrow['datetime'];
 			$Logs[] = $info;
 		}while($myrow=mysqli_fetch_array($result));
 	}
@@ -246,7 +161,7 @@ if( mysqli_connect_errno($conn) ){
 }else{
 }
 //prepare
-$sql = "SELECT admin.*,departments.name AS department_name FROM admin,departments WHERE departments.id=admin.department_id ORDER BY id DESC";
+$sql = "select A.id,A.username,A.first_name,A.last_name,B.name AS department,C.name AS branch from admin A inner join departments B on A.department_id = B.id inner join branch C on A.branch_id = C.id";
 
 //display 
 $result = mysqli_query($conn,$sql);
@@ -254,13 +169,13 @@ $result = mysqli_query($conn,$sql);
 $Admins = array();
 	if( $myrow=mysqli_fetch_array($result) ){
 		do{
-			$info= array();
-			$info['id'] = $myrow['id'];			
+			$info= array();	
+			$info['id'] = $myrow['id'];
 			$info['username'] = $myrow['username'];
 			$info['first_name'] = $myrow['first_name'];
 			$info['last_name'] = $myrow['last_name'];
-			$info['department_id'] = $myrow['department_id'];
-			$info['department_name'] = $myrow['department_name'];
+			$info['branch'] = $myrow['branch'];
+			$info['department'] = $myrow['department'];
 			$Admins[] = $info;
 		}while($myrow=mysqli_fetch_array($result));
 	}
@@ -297,39 +212,8 @@ $SuperAdmins = array();
 	return $SuperAdmins;
 }
 
-function user_details(){
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
 
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-$sql = "SELECT * FROM account where status='approved' OR status='blocked'";
-
-//display 
-$result = mysqli_query($conn,$sql);
-
-$Users = array();
-	if( $myrow=mysqli_fetch_array($result) ){
-		do{
-			$info= array();
-			$info['account_id'] = $myrow['account_id'];			
-			$info['username'] = $myrow['username'];
-			$info['first_name'] = $myrow['first_name'];
-			$info['middle_name'] = $myrow['middle_name'];
-			$info['last_name'] = $myrow['last_name'];
-			$info['email_address'] = $myrow['email_address'];
-			$info['status'] = $myrow['status'];
-			$Users[] = $info;
-		}while($myrow=mysqli_fetch_array($result));
-	}
-	return $Users;
-}
-
-function agency_details(){
+function branch_details(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -386,7 +270,7 @@ $Depts = array();
 	return $Depts;
 }
 
-function add_agency($agency_name,$agency_desc){
+function add_branch($branch_name,$branch_desc){
 
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
@@ -398,13 +282,13 @@ if( mysqli_connect_errno($conn) ){
 	// echo "OK";
 }
 //prepare
-$sql = "INSERT INTO govt_agency (agency_name,agency_desc) VALUES('$agency_name','$agency_desc')";
+$sql = "INSERT INTO branch (name,description) VALUES('$branch_name','$branch_desc')";
 
 //display
 $result = mysqli_query($conn,$sql);
 
 $username=$_SESSION['sa_username'];
-$action="adds admin";
+$action="adds branch";
 $object_id=mysqli_insert_id($conn);
 $sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
 
@@ -412,8 +296,8 @@ $result2 = mysqli_query($conn,$sql2);
 
 }
 
+function add_department($branch_id,$department_name,$department_desc){
 
-function block_users(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -421,43 +305,23 @@ $conn = mysqli_connect($host,$user,$pass,$db);
 if( mysqli_connect_errno($conn) ){
 	echo "Error in DB";
 }else{
+	// echo "OK";
 }
 //prepare
-$id = $_GET['id'];
-$sql = "UPDATE account SET status='blocked' WHERE account_id='$id'";
+$sql = "INSERT INTO departments (branch_id,name,description) VALUES('$branch_id','$department_name','$department_desc')";
 
 //display
-$result = mysqli_query($conn, $sql);
+$result = mysqli_query($conn,$sql);
 
 $username=$_SESSION['sa_username'];
-$action="blocks user";
-$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
+$action="adds department";
+$object_id=mysqli_insert_id($conn);
+$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
 
 $result2 = mysqli_query($conn,$sql2);
+
 }
 
-function activate_users(){
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-$id = $_GET['id'];
-$sql = "UPDATE account SET status='approved' WHERE account_id='$id' AND status='blocked'";
-
-//display
-$result = mysqli_query($conn, $sql);
-
-$username=$_SESSION['sa_username'];
-$action="blocks user";
-$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
-
-$result2 = mysqli_query($conn,$sql2);
-}
 
 function get_admin_details(){
 include "config.php";
@@ -471,7 +335,7 @@ if( mysqli_connect_errno($conn) ){
 //prepare
 
 $id=$_GET['id'];
-$sql = "SELECT * FROM admin where id=$id";
+$sql = "select A.id,A.username,A.first_name,A.last_name,B.name AS department,C.name AS branch from admin A inner join departments B on A.department_id = B.id inner join branch C on A.branch_id = C.id where A.id='$id'";
 
 //display 
 $result = mysqli_query($conn,$sql);
@@ -482,15 +346,17 @@ $ViewAdmin = array();
 			$info= array();
 			$info['id'] = $myrow['id'];
 			$info['username'] = $myrow['username'];
-			$info['password'] = $myrow['password'];
 			$info['first_name'] = $myrow['first_name'];
 			$info['last_name'] = $myrow['last_name'];
-			$info['department_id'] = $myrow['department_id'];
+			$info['branch'] = $myrow['branch'];
+			$info['department'] = $myrow['department'];
 			$ViewAdmin[] = $info;
 		}while($myrow=mysqli_fetch_array($result));
 	}
 	return $ViewAdmin;
 }
+
+
 
 function get_super_admin_details(){
 include "config.php";
@@ -525,7 +391,7 @@ $ViewSuperAdmin = array();
 	return $ViewSuperAdmin;
 }
 
-function get_agency_details(){
+function get_branch_details(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -537,7 +403,7 @@ if( mysqli_connect_errno($conn) ){
 //prepare
 
 $id=$_GET['id'];
-$sql = "SELECT * FROM govt_agency where id=$id";
+$sql = "SELECT * FROM branch where id=$id";
 
 //display 
 $result = mysqli_query($conn,$sql);
@@ -547,12 +413,42 @@ $ViewAgency = array();
 		do{
 			$info= array();
 			$info['id'] = $myrow['id'];
-			$info['agency_name'] = $myrow['agency_name'];
-			$info['agency_desc'] = $myrow['agency_desc'];
+			$info['name'] = $myrow['name'];
+			$info['description'] = $myrow['description'];
 			$ViewAgency[] = $info;
 		}while($myrow=mysqli_fetch_array($result));
 	}
 	return $ViewAgency;
+}
+
+function get_department_details(){
+include "config.php";
+$conn = mysqli_connect($host,$user,$pass,$db);
+
+//check
+if( mysqli_connect_errno($conn) ){
+	echo "Error in DB";
+}else{
+}
+//prepare
+
+$id=$_GET['id'];
+$sql = "SELECT * FROM departments where id=$id";
+
+//display 
+$result = mysqli_query($conn,$sql);
+
+$ViewDept = array();
+	if( $myrow=mysqli_fetch_array($result) ){
+		do{
+			$info= array();
+			$info['id'] = $myrow['id'];
+			$info['name'] = $myrow['name'];
+			$info['description'] = $myrow['description'];
+			$ViewDept[] = $info;
+		}while($myrow=mysqli_fetch_array($result));
+	}
+	return $ViewDept;
 }
 
 function select_branch(){
@@ -611,63 +507,9 @@ $Dept = array();
 }
 
 
-function select_region(){
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-$sql = "SELECT DISTINCT region FROM geography";
-
-//display 
-$result = mysqli_query($conn,$sql);
-
-$Region = array();
-	if( $myrow=mysqli_fetch_array($result) ){
-		do{
-			$info= array();			
-			$info['region'] = $myrow['region'];
-			$Region[] = $info;
-		}while($myrow=mysqli_fetch_array($result));
-	}
-	return $Region;
-}
 
 
-function select_province($region){
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-$sql = "SELECT province FROM geography where region='$region'";
-
-//display 
-$result = mysqli_query($conn,$sql);
-
-$Province = array();
-	if( $myrow=mysqli_fetch_array($result) ){
-		do{
-			$info= array();			
-			$info['province'] = $myrow['province'];
-			$Province[] = $info;
-		}while($myrow=mysqli_fetch_array($result));
-	}
-	return $Province;
-}
-
-
-
-
-function concern_details(){
+function inquiry_details(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -701,7 +543,7 @@ $Concerns = array();
 
 
 
-function get_concern_details(){
+function get_inquiry_details(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -738,7 +580,7 @@ $ViewConcern = array();
 
 
 
-function get_concern_response(){
+function get_inquiry_response(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -750,7 +592,7 @@ if( mysqli_connect_errno($conn) ){
 //prepare
 
 $id = $_GET['id'];
-$sql = "SELECT concern_response.* FROM concern_response where concern_response.concern_id='$id'";
+$sql = "SELECT * FROM answers,questions WHERE questions.answer_id=answers.id AND questions.id='$id'";
 
 
 //display 
@@ -771,7 +613,7 @@ $ViewConcernResponse = array();
 
 
 
-function add_concern_response($response_msg,$image,$concern_msg){
+function add_inquiry_response($response_msg,$image,$concern_msg){
 
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
@@ -793,6 +635,8 @@ WHERE concern_msg = '$concern_msg'";
 $result = mysqli_query($conn,$sql);
 }
 
+
+
 function response_log(){
 
 include "config.php";
@@ -806,152 +650,17 @@ if( mysqli_connect_errno($conn) ){
 }
 //prepare
 $username=$_SESSION['sa_username'];
-$action="replies to concern";
+$action="answers inquiry";
 $object_id=$_GET['id'];
 $sql = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
 
 //display
 $result = mysqli_query($conn,$sql);
-
 }
 
 
 
-function make_status_replied(){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$sql = "UPDATE concern 
-   INNER JOIN concern_response
-   SET concern.status = 'replied' 
-   WHERE concern.concern_id = concern_response.concern_id";
-
-//display
-$result = mysqli_query($conn,$sql);
-}
-
-
-
-
-
-
-function alert_details(){
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-$sql = "SELECT * FROM alert";
-
-//display 
-$result = mysqli_query($conn,$sql);
-
-$Alert = array();
-	if( $myrow=mysqli_fetch_array($result) ){
-		do{
-			$info= array();
-			$info['id'] = $myrow['id'];
-			$info['alert_title'] = $myrow['alert_title'];
-			$info['alert_msg'] = $myrow['alert_msg'];
-			$info['country'] = $myrow['country'];
-			$info['region'] = $myrow['region'];
-			$info['province'] = $myrow['province'];
-			$info['city'] = $myrow['city'];
-			$info['date_issued'] = $myrow['date_issued'];
-			$Alert[] = $info;
-		}while($myrow=mysqli_fetch_array($result));
-	}
-	return $Alert;
-}
-
-
-
-
-function get_alert_details(){
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-}
-//prepare
-
-$id=$_GET['id'];
-$sql = "SELECT * FROM alert where id=$id";
-
-//display 
-$result = mysqli_query($conn,$sql);
-
-$ViewAlert = array();
-	if( $myrow=mysqli_fetch_array($result) ){
-		do{
-			$info= array();
-			$info['id'] = $myrow['id'];
-			$info['alert_title'] = $myrow['alert_title'];
-			$info['alert_msg'] = $myrow['alert_msg'];
-			$info['image'] = $myrow['image'];
-			$info['country'] = $myrow['country'];
-			$info['region'] = $myrow['region'];
-			$info['province'] = $myrow['province'];
-			$info['city'] = $myrow['city'];
-			$info['date_issued'] = $myrow['date_issued'];
-			$ViewAlert[] = $info;
-		}while($myrow=mysqli_fetch_array($result));
-	}
-	return $ViewAlert;
-}
-
-
-
-
-
-
-function add_alert($alert_title,$alert_msg,$country,$region,$province,$city){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$sql = "INSERT INTO alert(alert_title,alert_msg,country,region,province,city,date_issued) VALUES('$alert_title','$alert_msg','$country','$region','$province','$city',now())";
-
-//display
-$result = mysqli_query($conn,$sql);
-
-$username=$_SESSION['sa_username'];
-$action="adds alert";
-$object_id=mysqli_insert_id($conn);
-$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
-
-$result2 = mysqli_query($conn,$sql2);
-
-}
-
-
-
-
-
-
-function edit_alert($alert_title,$alert_msg,$country,$region,$province,$city){
+function edit_admin($username,$password,$first_name,$last_name,$branch_id,$department_id){
 
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
@@ -964,56 +673,13 @@ if( mysqli_connect_errno($conn) ){
 }
 //prepare
 $id = $_GET['id'];
-$sql = "UPDATE alert SET alert_title='$alert_title',alert_msg='$alert_msg',country='$country',region='$region',province='$province',city='$city',date_issued=now() WHERE id='$id'";
+$sql = "UPDATE admin SET username='$username',first_name='$first_name',last_name='$last_name',department_id='$department_id',branch_id='$branch_id' WHERE id='$id'";
 
 //display
 $result = mysqli_query($conn,$sql);
 }
 
 
-
-function edit_alert_log(){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$username=$_SESSION['sa_username'];
-$action="edits alert";
-$object_id=$_GET['id'];
-$sql = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
-
-//display
-$result = mysqli_query($conn,$sql);
-
-}
-
-
-
-function edit_admin($username,$password,$first_name,$last_name,$email,$govt_agency){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$id = $_GET['id'];
-$sql = "UPDATE admin SET username='$username',password='$password',first_name='$first_name',last_name='$last_name',email='$email',govt_agency='$govt_agency' WHERE id='$id'";
-
-//display
-$result = mysqli_query($conn,$sql);
-}
 
 function edit_super_admin($username,$password,$first_name,$last_name,$email){
 
@@ -1032,9 +698,18 @@ $sql = "UPDATE super_admin SET username='$username',password='$password',first_n
 
 //display
 $result = mysqli_query($conn,$sql);
+
+$username=$_SESSION['sa_username'];
+$action="edits superadmin profile";
+$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
+
+$result2 = mysqli_query($conn,$sql2);
 }
 
-function edit_agency($agency_name,$agency_desc){
+
+
+
+function edit_branch($branch_name,$branch_desc){
 
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
@@ -1047,11 +722,47 @@ if( mysqli_connect_errno($conn) ){
 }
 //prepare
 $id = $_GET['id'];
-$sql = "UPDATE govt_agency SET agency_name='$agency_name',agency_desc='$agency_desc' WHERE id='$id'";
+$sql = "UPDATE branch SET name='$branch_name',description='$branch_desc' WHERE id='$id'";
 
 //display
 $result = mysqli_query($conn,$sql);
+
+$username=$_SESSION['sa_username'];
+$action="edits branch";
+$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
+
+$result2 = mysqli_query($conn,$sql2);
 }
+
+
+
+
+function edit_department($department_name,$department_desc){
+
+include "config.php";
+$conn = mysqli_connect($host,$user,$pass,$db);
+
+//check
+if( mysqli_connect_errno($conn) ){
+	echo "Error in DB";
+}else{
+	// echo "OK";
+}
+//prepare
+$id = $_GET['id'];
+$sql = "UPDATE departments SET name='$department_name',description='$department_desc' WHERE id='$id'";
+
+//display
+$result = mysqli_query($conn,$sql);
+
+$username=$_SESSION['sa_username'];
+$action="edits department";
+$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
+
+$result2 = mysqli_query($conn,$sql2);
+}
+
+
 
 
 function edit_admin_log(){
@@ -1076,7 +787,9 @@ $result = mysqli_query($conn,$sql);
 
 }
 
-function edit_super_admin_log(){
+
+
+function add_operator($username,$password,$first_name,$last_name,$branch,$department){
 
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
@@ -1088,42 +801,21 @@ if( mysqli_connect_errno($conn) ){
 	// echo "OK";
 }
 //prepare
-$username=$_SESSION['sa_username'];
-$action="edits admin profile";
-$object_id=$_GET['id'];
-$sql = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
-
-//display
-$result = mysqli_query($conn,$sql);
-
-}
-
-
-function add_admin($username,$password,$first_name,$last_name,$email,$govt_agency){
-
-include "config.php";
-$conn = mysqli_connect($host,$user,$pass,$db);
-
-//check
-if( mysqli_connect_errno($conn) ){
-	echo "Error in DB";
-}else{
-	// echo "OK";
-}
-//prepare
-$sql = "INSERT INTO admin (username,password,first_name,last_name,email,govt_agency) VALUES('$username',md5('$password'),'$first_name','$last_name','$email','$govt_agency')";
+$sql = "INSERT INTO admin (username,password,first_name,last_name,branch_id,department_id) VALUES('$username',md5('$password'),'$first_name','$last_name','$branch','$department')";
 
 //display
 $result = mysqli_query($conn,$sql);
 
 $username=$_SESSION['sa_username'];
-$action="adds admin";
+$action="adds operator";
 $object_id=mysqli_insert_id($conn);
 $sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
 
 $result2 = mysqli_query($conn,$sql2);
-
 }
+
+
+
 
 function add_super_admin($username,$password,$first_name,$last_name,$email){
 
@@ -1143,13 +835,39 @@ $sql = "INSERT INTO super_admin (username,password,first_name,last_name,email) V
 $result = mysqli_query($conn,$sql);
 
 $username=$_SESSION['sa_username'];
-$action="adds admin";
+$action="adds superadmin";
 $object_id=mysqli_insert_id($conn);
 $sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$object_id',now())";
 
 $result2 = mysqli_query($conn,$sql2);
-
 }
+
+
+
+function delete_superadmin_(){
+include "config.php";
+$conn = mysqli_connect($host,$user,$pass,$db);
+
+//check
+if( mysqli_connect_errno($conn) ){
+	echo "Error in DB";
+}else{
+}
+//prepare
+$id=$_GET['id'];
+$sql = "DELETE FROM super_admin WHERE id='$id'";
+
+//display
+$result = mysqli_query($conn, $sql);
+
+
+$username=$_SESSION['sa_username'];
+$action="deletes superadmin";
+$sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
+
+$result2 = mysqli_query($conn,$sql2);
+}
+
 
 
 function delete_admin(){
@@ -1174,10 +892,9 @@ $action="deletes admin";
 $sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
 
 $result2 = mysqli_query($conn,$sql2);
-
 }
 
-function delete_agency(){
+function delete_branch(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -1188,23 +905,20 @@ if( mysqli_connect_errno($conn) ){
 }
 //prepare
 $id=$_GET['id'];
-$sql = "DELETE FROM govt_agency WHERE id='$id'";
+$sql = "DELETE FROM branch WHERE id='$id'";
 
 //display
 $result = mysqli_query($conn, $sql);
 
 
 $username=$_SESSION['sa_username'];
-$action="deletes admin";
+$action="deletes branch";
 $sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
 
 $result2 = mysqli_query($conn,$sql2);
-
 }
 
-
-
-function delete_alert(){
+function delete_department(){
 include "config.php";
 $conn = mysqli_connect($host,$user,$pass,$db);
 
@@ -1215,16 +929,18 @@ if( mysqli_connect_errno($conn) ){
 }
 //prepare
 $id=$_GET['id'];
-$sql = "DELETE FROM alert WHERE id='$id'";
+$sql = "DELETE FROM departments WHERE id='$id'";
 
 //display
 $result = mysqli_query($conn, $sql);
 
+
 $username=$_SESSION['sa_username'];
-$action="deletes alert";
+$action="deletes department";
 $sql2 = "INSERT INTO logs(username,action,object_id,datetime) VALUES('$username','$action','$id',now())";
 
 $result2 = mysqli_query($conn,$sql2);
+
 }
 
 

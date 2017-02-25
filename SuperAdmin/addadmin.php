@@ -70,13 +70,13 @@ function confirmSubmit(){
 							<div class="form-group">
 								<div class="col-sm-12">
 								<label>Branch</label>
-									<select class="form-control" name="govt_agency" required>
+									<select class="form-control" name="branch"  id="branch" required>
 										<option selected="selected" value="" disabled>--Select Branch--</option>
 										<?php
 										if( isset($Branch) && count($Branch)>0 ){
 											foreach($Branch as $Branch){
 												echo '
-														<option value="'.$Branch['name'].'">'.$Branch['name'].'</option>
+														<option value="'.$Branch['id'].'">'.$Branch['name'].'</option>
 													';
 											}
 										}else{
@@ -91,13 +91,13 @@ function confirmSubmit(){
 							<div class="form-group">
 								<div class="col-sm-12">
 								<label>Department</label>
-									<select class="form-control" name="govt_agency" required>
+									<select class="form-control" name="department" id="department" required>
 										<option selected="selected" value="" disabled>--Select Department--</option>
 										<?php
 										if( isset($Dept) && count($Dept)>0 ){
 											foreach($Dept as $Dept){
 												echo '
-														<option value="'.$Dept['name'].'">'.$Dept['name'].'</option>
+														<option value="'.$Dept['id'].'">'.$Dept['name'].'</option>
 													';
 											}
 										}else{
@@ -139,6 +139,7 @@ function confirmSubmit(){
 pageFooter();
 ?>
 <script>
+
 $("#username").keyup(function()
 {
 	username= document.getElementById("username").value;
@@ -173,28 +174,6 @@ $("#username").keyup(function()
 				} 
 			});
 	}
-});
-
-$("#email").keyup(function()
-{
-	var email= document.getElementById("email").value;
-	$.ajax
-			({
-				type: "POST",
-				url: "check_email.php",
-				data: {email},
-				cache: false,
-				success: function(r)
-				{
-				   if(r==0){
-					   $(".e_status").html('<i style="color: red;">email is taken</i>');
-						document.getElementById("send").disabled = true;	
-				   }else if(r==1){
-					   $(".e_status").html('');
-						document.getElementById("send").disabled = false;	
-				   }
-				} 
-			});
 });
 
 $("#password").keyup(function()

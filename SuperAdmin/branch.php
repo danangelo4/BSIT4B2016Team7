@@ -116,7 +116,7 @@ $(document).ready(function(){
 	
 	$(".btnEdit").click(function(){
        if(ID!=""){
-    		window.location = 'admin.php?action=edit_agency&id=' + ID;
+    		window.location = 'admin.php?action=edit_branch&id=' + ID;
 
         }else{
 			$('.modal').modal('show');
@@ -129,12 +129,12 @@ $(document).ready(function(){
 	$(".btnDelete").click(function(){
        if(ID!=""){
 		   
-		    if(!confirm('Are you sure you want to delete this agency?')){
+		    if(!confirm('Are you sure you want to delete this branch?')){
             e.preventDefault();
             return false;
 			}else{
-    		window.location = 'admin.php?action=delete_agency&id=' + ID;
-			alert("Agency has been deleted");
+    		window.location = 'admin.php?action=delete_branch&id=' + ID;
+			alert("Branch has been deleted");
 			}
 
         }else{

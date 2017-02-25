@@ -8,6 +8,12 @@ htmlHeader('Dashboard','dashboard','');
 <?php
 pageHeader('Dashboard','dashboard','')
 ?>
+<script>
+function confirmSubmit(){
+	alert("Your inquiry has been sent successfully");
+}
+</script>
+
 <br />
 
 <div class="container">
@@ -18,7 +24,7 @@ pageHeader('Dashboard','dashboard','')
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="form-group">
-								<input class="form-control input-lg" type="search" placeholder="Search keywords here">
+								<input class="form-control input-lg" type="search" id="search" name="search" placeholder="Search keywords here">
 							</div>
 						</div>
 					</div>
@@ -30,16 +36,32 @@ pageHeader('Dashboard','dashboard','')
 					</div>
 					<div class="row">
 						<div class="col-sm-12">
-							<div data-toggle="collapse" data-target="#message" class="whitetable">
-								<p style="padding-left:20px;">
-									<br />
-									<a><b style="font-size:110%" class="redtext clickable">Question to be flashed here</b><span class="glyphicon glyphicon-plus" style="float:right; margin-right:10px;"></span></a>
-									<br />
-									<div id="message" class="collapse" style="padding-left:20px;">
-									Hello this is the message which contains the question details.
-									</div>
-									<hr width="95%" />
-								</p>
+							<div class="whitetable" style="padding-top:20px;">
+								<?php
+										if( isset($Inquiries) && count($Inquiries)>0 ){
+											foreach($Inquiries as $Inquiries){
+												echo '
+														<div>
+														<p class="header clickable">
+																<a style="padding-left:20px;"><b style="font-size:110%" class="redtext">'.$Inquiries['title'].'</b><span style="float:right; margin-right:10px;"><span class="glyphicon glyphicon-plus"></span>/<span class="glyphicon glyphicon-minus"></span></span></a>
+															<br />
+															<div class="collapse">
+																<span style="padding-left:20px;">'.$Inquiries['description'].'</span>
+															</div>
+														</p>
+														</div>
+														<hr width="95%" />
+													';
+											}
+										}else{
+											echo '
+													<b style="font-size:110%;padding-left:20px;" class="redtext">
+													No records found
+													</b>
+													<hr width="95%" />
+											';
+										}
+								?>
 							</div>
 						</div>
 					</div>
@@ -104,12 +126,35 @@ pageFooter();
 ?>
 <script>
 $(document).ready(function(){
+	
+	$("#search").keyup(function()
+	{
+		search= document.getElementById("search").value;
+		$.ajax
+		  ({
+		   type: "POST",
+		   url: "views/check_keywords.php",
+		   data: {search},
+		   cache: false,
+		   success: function(reslt)
+		   {
+			  $(".whitetable").html(reslt);
+		   } 
+		   });
+	});
+	
 
 	$('.collapse').on('show.bs.collapse', function(){
 	$(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
 	}).on('hide.bs.collapse', function(){
 	$(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
 	});
+	
+	
+	$('.header').click(function(){
+		$(this).nextUntil('p.header').slideToggle();
+	});
+	
 
 	$('#myModal').on('show.bs.modal', function(){ 
 	//populate modal

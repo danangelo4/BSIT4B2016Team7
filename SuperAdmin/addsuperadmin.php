@@ -77,7 +77,7 @@ function confirmSubmit(){
 				
 							<div class="form-group">
 								<div class="col-sm-12">
-									<button type="submit" class="btn btn-success btn-md" id="send" name="add_super_admin">Add Admin</button>
+									<button type="submit" class="btn btn-success btn-md" id="send" name="add_super_admin">Add Super Admin</button>
 									<a type="button" class="btn btn-primary btn-md" href="admin.php?action=superadmins">Back</a>
 								</div>
 							</div>

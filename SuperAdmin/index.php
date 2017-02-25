@@ -53,7 +53,7 @@ pageHeader('Dashboard','dashboard','');
             <div class="icon">
               <i class="fa fa-list-alt"></i>
             </div>
-            <a href="admin.php?action=concerns" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="admin.php?action=inquiries" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
           </div>
         </div>
         <!-- ./col -->

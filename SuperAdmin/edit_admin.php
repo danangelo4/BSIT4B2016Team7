@@ -62,13 +62,13 @@ function confirmSubmit(){
 									<div class="form-group">
 										<div class="col-sm-6">
 										<label>Branch</label>
-											<select class="form-control" name="branch">
-											<option selected="selected" value="branch">Current: Branch</option>
+											<select class="form-control" name="branch_id" id="branch_id" required>
+											<option selected="selected" value="'.$ViewAdmin['branch'].'" disabled>Current: '.$ViewAdmin['branch'].'</option>
 											';
 												if( isset($Branch) && count($Branch)>0 ){
 													foreach($Branch as $Branch){
 														echo '
-																<option value="'.$Branch['name'].'">'.$Branch['name'].'</option>
+																<option value="'.$Branch['id'].'">'.$Branch['name'].'</option>
 															';
 													}
 												}else{
@@ -81,8 +81,8 @@ function confirmSubmit(){
 										</div>
 										<div class="col-sm-6">
 										<label>Department</label>
-											<select class="form-control" name="department">
-											<option selected="selected" value="'.$ViewAdmin['department_id'].'">Current: '.$ViewAdmin['department_id'].'</option>
+											<select class="form-control" name="department_id" id="department_id" required>
+											<option selected="selected" value="'.$ViewAdmin['department'].'" disabled>Current: '.$ViewAdmin['department'].'</option>
 											
 											 </select>
 										</div>
@@ -119,6 +119,23 @@ function confirmSubmit(){
 pageFooter();
 ?>
 <script>
+
+$("#branch_id").change(function()
+ {
+	branch= document.getElementById("branch_id").value;
+		$.ajax
+		({
+			type: "POST",
+			url: "get_department_filter_branch.php",
+			data: {branch},
+			cache: false,
+			success: function(r)
+			{
+			  $("#department_id").html(r);
+			} 
+		});
+	
+});
 
 $("#email").keyup(function()
 {

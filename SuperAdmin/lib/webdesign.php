@@ -171,25 +171,6 @@ function pageFooter(){
 <script src="plugins/fastclick/fastclick.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function()
-{
-	setInterval(function(){
-		$.ajax
-		({
-			type: "GET",
-			url: "check_livechat_request.php",
-			cache: false,
-			success: function(r)
-			{
-				$(".pull-right-container").html(r);
-			}	
-		});
-	}, 3000); //check unattended every 3 seconds
-	
-	
-});
-</script>
 
 
 <?php

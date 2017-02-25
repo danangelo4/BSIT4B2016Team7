@@ -9,12 +9,12 @@
 ?>
 <?php
 include_once "lib/webdesign.php";
-htmlHeader('Agencies','agencies','');
-pageHeader('Agencies','agencies','');
+htmlHeader('Branch','branch','');
+pageHeader('Branch','branch','');
 ?>
 <script>
 function confirmSubmit(){
-	alert("Agency has been updated successfully");
+	alert("Branch has been updated successfully");
 }
 </script>
   <!-- Content Wrapper. Contains page content -->
@@ -22,7 +22,7 @@ function confirmSubmit(){
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Edit Agency
+        Edit Branch
       </h1>
     </section>
 
@@ -32,10 +32,6 @@ function confirmSubmit(){
 		<div class="row">
 			<div class="col-sm-12">
 				<section class="panel">
-					<header class="panel-heading panel_headingblue white">
-						Edit Agency
-					</header>
-
 					
 					<div class="panel-body">
 						<?php
@@ -46,20 +42,20 @@ function confirmSubmit(){
 									<div class="form-group">
 										<div class="col-sm-12">
 										<label>Name</label>
-											<input type="text" class="form-control" name="agency_name" value="'.$ViewAgency['agency_name'].'" readonly />
+											<input type="text" class="form-control" name="branch_name" value="'.$ViewAgency['name'].'" />
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
 										<label>Description</label>
-											<input type="text" class="form-control" value="'.$ViewAgency['agency_desc'].'" name="agency_desc" id="agency_desc" required />
+											<input type="text" class="form-control" value="'.$ViewAgency['description'].'" name="branch_desc" id="branch_desc" required />
 											<span class= "desc_status"></span> 
 										</div>
 									</div>
 									<div class="form-group">
 										<div class="col-sm-12">
-											<button type="submit" class="btn btn-success btn-md" id="send" name="edit_agency">Update</button>
-											<a type="button" class="btn btn-primary btn-md" href="admin.php?action=agencies">Back</a>
+											<button type="submit" class="btn btn-success btn-md" id="send" name="edit_branch">Update</button>
+											<a type="button" class="btn btn-primary btn-md" href="admin.php?action=branch">Back</a>
 										</div>
 									</div>
 									
@@ -89,39 +85,24 @@ pageFooter();
 ?>
 <script>
 
-$("#agency_desc").keyup(function()
+$("#branch_desc").keyup(function()
 {
-	agency_desc= document.getElementById("agency_desc").value;
-	if (agency_desc.length < 1) {
+	branch_desc= document.getElementById("branch_desc").value;
+	if (branch_desc.length < 1) {
 		$(".desc_status").html('<i style="color: red;">This field is required</i>');
 		document.getElementById("send").disabled = true;
-	}else if (agency_desc.length < 5) {
+	}else if (branch_desc.length < 5) {
 		$(".desc_status").html('<i style="color: red;">5 minimum characters</i>');
 		document.getElementById("send").disabled = true;
-	}else if (agency_desc.length > 100) {
+	}else if (branch_desc.length > 100) {
 		$(".desc_status").html('<i style="color: red;">100 maximum characters</i>');
 		document.getElementById("send").disabled = true;
-	}else if ((jQuery.trim( agency_desc )).length==0) {
+	}else if ((jQuery.trim( branch_desc )).length==0) {
 		$(".desc_status").html('<i style="color: red;">You have only entered spaces</i>');
 		document.getElementById("send").disabled = true;
 	}else{
-	$.ajax
-			({
-				type: "POST",
-				url: "check_description.php",
-				data: {agency_desc},
-				cache: false,
-				success: function(r)
-				{
-				   if(r==0){
-					   $(".desc_status").html('<i style="color: red;">Description for Agency already exists</i>');
-						document.getElementById("send").disabled = true;	
-				   }else if(r==1){
-					   $(".desc_status").html('<i style="color: green;">Description is available<i>');
+					   $(".desc_status").html('');
 						document.getElementById("send").disabled = false;	
-				   }
-				} 
-			});
 	}
 });
 

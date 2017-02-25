@@ -56,7 +56,8 @@ pageHeader('Logs','logs','');
 									}else{
 										echo '
 												<tr class="text-center">
-													<td colspan="2">No records found</td>
+													<td>N/A</td>
+													<td>N/A</td>
 													
 												</tr>
 												';
